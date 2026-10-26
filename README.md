@@ -13,12 +13,34 @@ connection is needed.
 
 ## Features
 
-The Streamlit UI has four tabs:
+The Streamlit UI has four tabs. The screenshots show the bundled *Retail* sample
+(the UI is in German).
 
-- **Upload:** a ZIP of a Power BI project, or a bundled sample model. The model is parsed and converted right away.
-- **Edit:** descriptions, data types and dimension flags in forms, metrics (edit, add, delete) and the full Ossie YAML. Every change is validated against the Ossie JSON schema and the upstream semantic checks.
-- **Graph:** an entity-relationship diagram with fact and dimension tables, keys and joins.
-- **Export:** download the result for one of these targets:
+### Upload
+
+Upload a ZIP of a Power BI project, or load the bundled sample model. The model
+is parsed and converted right away; the sidebar shows whether the result
+conforms to Ossie.
+
+![Upload tab: a Power BI project uploaded as ZIP, converted to 3 datasets, 15 fields and 2 relationships](docs/images/upload.png)
+
+### Edit
+
+Descriptions, data types and dimension flags in forms, metrics (edit, add,
+delete) and the full Ossie YAML. Every change is validated against the Ossie
+JSON schema and the upstream semantic checks.
+
+![Edit tab: the fields of the dataset verkauefe with data type, dimension and time flags](docs/images/editor.png)
+
+### Graph
+
+An entity-relationship diagram with fact and dimension tables, keys and joins.
+
+![Graph tab: the fact table verkauefe joined to the dimension tables kunden and produkte](docs/images/graph.png)
+
+### Export
+
+Download the result for one of these targets:
 
 | Target | Output | Converter |
 |---|---|---|
@@ -27,6 +49,16 @@ The Streamlit UI has four tabs:
 | Databricks | Unity Catalog Metric View (YAML) | `ossie_databricks`, a Python port of the Apache Ossie Java converter |
 | Cube | `model/cubes/*.yml` and `model/views/*.yml` as a ZIP | vendored Apache Ossie converter |
 | Honeydew | workspace (`workspace.yml`, `schema/…`) as a ZIP | vendored Apache Ossie converter |
+
+Targets that need a database address ask for it, for example catalog and schema
+for Databricks. A preview of the output and the conversion notes are shown
+before the download.
+
+![Export tab: Databricks selected, with catalog, schema and fact table options and a preview of the Metric View YAML](docs/images/export.png)
+
+The exported Metric View, created in Databricks Unity Catalog:
+
+![The Metric View verkauefe_metric_view in the Databricks Catalog Explorer, with the fact table joined to kunden and produkte](docs/images/databricks_semantic.png)
 
 ## Quick start
 
