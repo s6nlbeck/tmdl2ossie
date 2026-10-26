@@ -531,7 +531,8 @@ def _build_join(
 ) -> dict[str, Any]:
     rel = node.rel
     alias = node.alias
-    join: dict[str, Any] = {"name": alias, "source": validate_source(datasets[node.dataset].get("source"), node.dataset)}
+    source = validate_source(datasets[node.dataset].get("source"), node.dataset)
+    join: dict[str, Any] = {"name": alias, "source": source}
 
     stash = read_stash(rel, notices, f"join '{alias}'")
     from_cols = str_list(rel.get("from_columns"))
@@ -547,9 +548,8 @@ def _build_join(
         if parent_cols == child_cols:
             join["using"] = list(parent_cols)
         else:
-            join["on"] = " AND ".join(
-                f"{parent_alias}.{parent} = {alias}.{child}" for parent, child in zip(parent_cols, child_cols)
-            )
+            pairs = zip(parent_cols, child_cols, strict=True)
+            join["on"] = " AND ".join(f"{parent_alias}.{parent} = {alias}.{child}" for parent, child in pairs)
     if "rely" in stash:
         join["rely"] = stash["rely"]
     elif node.parent_is_from and _covers_unique_key(datasets[node.dataset], to_cols):

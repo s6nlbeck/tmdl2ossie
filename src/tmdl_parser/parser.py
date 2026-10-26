@@ -28,7 +28,7 @@ from tmdl_parser.datamodels import (
     TMDLTable,
     TMDLVariation,
 )
-from tmdl_parser.helpers import TMDLBlock, TMDLParseError, parse_bool, parse_document
+from tmdl_parser.helpers import TMDLBlock, TMDLParseError, parse_bool, parse_document, unquote_name
 
 MODEL_FILE = "model.tmdl"
 DATABASE_FILE = "database.tmdl"
@@ -105,11 +105,13 @@ def parse_model_file(path: str | Path) -> TMDLModel:
     )
 
     for ref in root.children_of("ref") + block.children_of("ref"):
+        # split_header only unquotes a name that is quoted as a whole, and here
+        # the name is `table 'Product Details'` -- the quotes sit after the kind.
         kind, _, name = (ref.name or "").partition(" ")
         if kind == "table":
-            model.tableRefs.append(name.strip())
+            model.tableRefs.append(unquote_name(name))
         elif kind == "cultureInfo":
-            model.cultureRefs.append(name.strip())
+            model.cultureRefs.append(unquote_name(name))
 
     return model
 

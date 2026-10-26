@@ -19,7 +19,7 @@ An earlier plan had an intermediate application-specific JSON format between ste
 
 The TMDL parser, Ossie validation, the TMDL → Ossie mapping and a Streamlit UI are implemented. Export targets: Ossie YAML/JSON, Snowflake, Cube and Honeydew through the vendored Ossie converters, Databricks through `src/ossie_databricks/` (our Python port of the vendored Java converter). dbt was evaluated and deliberately left out (its converter emits `semantic_manifest.json`, not project YAML, and cannot be a workspace member).
 
-`src/pbi_semantik/mapping.py` converts a `TMDLSemanticModel` into an `OssieDocument` (`convert(model, *, name=None)` → `ConversionResult`, with `mapping_helpers.py` holding the data type table, M source resolution and extension packing). It never raises on awkward input if it can avoid it — unexpressible constructs are skipped and reported in `ConversionResult.warnings`, so one bad relationship does not cost the whole model. `MappingError` is reserved for a model that cannot produce a document at all. The UI is `src/pbi_semantik/app.py` (`main()` in `__init__.py` launches it), with the non-UI logic in three modules:
+`src/tmdl2ossie/mapping.py` converts a `TMDLSemanticModel` into an `OssieDocument` (`convert(model, *, name=None)` → `ConversionResult`, with `mapping_helpers.py` holding the data type table, M source resolution and extension packing). It never raises on awkward input if it can avoid it — unexpressible constructs are skipped and reported in `ConversionResult.warnings`, so one bad relationship does not cost the whole model. `MappingError` is reserved for a model that cannot produce a document at all. The UI is `src/tmdl2ossie/app.py` (`main()` in `__init__.py` launches it), with the non-UI logic in three modules:
 
 - `loading.py` — untrusted ZIP upload → one `LoadedModel` per `model.tmdl` found. Extracts *only* `.tmdl` files, skips macOS `__MACOSX/` / `._*` resource forks, rejects path traversal, caps inflated size.
 - `graph.py` — Ossie dict → Graphviz DOT (ER diagram, rendered in the browser by `st.graphviz_chart`; no Graphviz install needed). Must tolerate hand-edited, invalid documents.
@@ -32,7 +32,7 @@ The TMDL parser, Ossie validation, the TMDL → Ossie mapping and a Streamlit UI
 
 The app's single source of truth is `st.session_state.doc`, the document as a **plain dict**, not an `OssieDocument` — the pydantic models would silently drop unknown nested keys typed into the YAML editor. Every change goes through `_commit()`, which bumps `rev`; widget keys include `rev` so forms rebuild from the new document. YAML edits are accepted once they pass the pydantic *structure* check; finer errors show in the sidebar instead of blocking the edit.
 
-Tests live in `tests/test_ui.py` (pytest, incl. Streamlit `AppTest`) and `tests/test_ossie_databricks.py`; the parser and mapping still have no tests of their own. The TMDL parser is pure standard library; the dependencies exist for the Ossie side.
+Tests: `tests/test_parser.py` (grammar + vocabulary), `tests/test_mapping.py` (the rules of the mapping spec), `tests/test_ui.py` (loading, graph, exporters, Streamlit `AppTest`) and `tests/test_ossie_databricks.py`. Parser and mapping tests run against `tests/fixtures/Sales.SemanticModel`, a hand-written TMDL model (tab-indented like a real export) covering what the Retail sample lacks, plus the Retail sample itself. `test_retail_sample_is_fully_understood` asserts that a real export leaves the parser's `extra_*` buckets empty — the lossless invariant used as an early warning for new Power BI constructs. The TMDL parser is pure standard library; the dependencies exist for the Ossie side.
 
 `src/tmdl_parser/` is split in three layers, and changes should respect that split:
 
@@ -50,7 +50,7 @@ The two structural rules the block parser relies on, both documented at their im
 - A line's role is decided by its first unquoted `:` or `=`. One word left of `=` is a property with an expression value (`source = ...`); two or more is a block header (`measure 'X' = ...`, `partition kunden = m` — where the right-hand side is the source *type*, not code).
 - A multi-line M/DAX expression is recognized by being indented *deeper than the object's own properties*. That is what separates a measure's DAX from the `formatString` line following it. An expression indented at property level would be misread.
 
-The Retail sample contains **no measures**, no calculated columns, no `isKey` and no SQL-backed partition — it is CSV-only. Those mapping paths (measures → metrics, DAX dialect, `primary_key`, `source` resolution from `Sql.Database`) have only been checked against throwaway synthetic TMDL, which is not kept in the repo. Export a richer model before trusting them, or write the fixture back as a test.
+The Retail sample contains **no measures**, no calculated columns, no `isKey` and no SQL-backed partition — it is CSV-only. Those mapping paths (measures → metrics, DAX dialect, `primary_key`, `source` resolution from `Sql.Database`) are covered by the synthetic `tests/fixtures/Sales.SemanticModel` only — written by hand, not exported by Power BI Desktop. Check a real export with these constructs before trusting them fully, and extend the fixture when a new construct turns up.
 
 ## Licensing
 
@@ -68,13 +68,13 @@ Python 3.13, [uv](https://docs.astral.sh/uv/) with the `uv_build` backend and a 
 ```bash
 uv sync                 # create/refresh .venv from pyproject.toml
 uv add <pkg>            # add a dependency (don't hand-edit pyproject deps)
-uv run pbi-semantik     # start the Streamlit UI (pbi_semantik:main)
+uv run tmdl2ossie       # start the Streamlit UI (tmdl2ossie:main)
 uv run python -m ...    # run anything inside the project venv
 ```
 
-`uv run pytest` runs the suite, `uv run pytest tests/test_ui.py::test_name` a single test. `uv run pbi-semantik` starts the UI (extra args go to `streamlit run`, e.g. `--server.port 8600`). `uv run pytest tests/test_ossie_databricks.py` runs the ported Databricks tests alone. The vendored Snowflake converter's suite: `uv run pytest vendor/ossie-converters-main/snowflake/tests -q -p no:cacheprovider` (194 tests). The vendored upstream Ossie suite runs with `uv run --with pytest pytest vendor/ossie/python_implementation/tests -q` (108 tests) — worth running after pulling an upstream update.
+`uv run pytest` runs the suite, `uv run pytest tests/test_ui.py::test_name` a single test. `uv run ruff check` lints (config in `pyproject.toml`, `vendor/` excluded; there is no `ruff format` step, so the code is not auto-formatted). CI (`.github/workflows/ci.yml`) runs `uv sync --locked`, ruff, our tests and the vendored Ossie and Snowflake suites on every push to `main`. `uv run tmdl2ossie` starts the UI (extra args go to `streamlit run`, e.g. `--server.port 8600`). `uv run pytest tests/test_ossie_databricks.py` runs the ported Databricks tests alone. The vendored Snowflake converter's suite: `uv run pytest vendor/ossie-converters-main/snowflake/tests -q -p no:cacheprovider` (194 tests). The vendored upstream Ossie suite runs with `uv run pytest vendor/ossie/python_implementation/tests -q -p no:cacheprovider` (108 tests) — worth running after pulling an upstream update.
 
-`[tool.uv.build-backend] module-name` lists both `pbi_semantik` and `tmdl_parser`. Without it the backend ships only the module matching the project name, so a new top-level package under `src/` must be added there or it silently stays out of the wheel (an editable dev install hides this).
+`[tool.uv.build-backend] module-name` lists `tmdl2ossie`, `tmdl_parser` and `ossie_databricks`. Without it the backend ships only the module matching the project name, so a new top-level package under `src/` must be added there or it silently stays out of the wheel (an editable dev install hides this).
 
 ## Ossie output side
 
@@ -85,7 +85,7 @@ uv run python -m ...    # run anything inside the project venv
 Three facts that decide how to use it, all verified against the spec:
 
 - **The JSON Schema is normative; the pydantic models are weaker.** `ossie.OssieDocument` accepts unknown properties in nested objects (and *silently drops* them), and treats `version` as neither required nor value-checked, where `ossie-schema.json` rejects all three. So validate generated output against the schema — passing pydantic validation proves less.
-- **`src/pbi_semantik/validation.py` is the facade to use** (`validate_model` / `validate_document` / `validate_file`). Upstream's `validation/validate.py` keeps its aggregation inside a CLI `main()` that prints and exits; the facade calls the five check functions itself and returns a `ValidationResult` with errors and warnings separated. Beyond the schema it adds unique names, relationship reference integrity, column arity and SQL syntax (sqlglot).
+- **`src/tmdl2ossie/validation.py` is the facade to use** (`validate_model` / `validate_document` / `validate_file`). Upstream's `validation/validate.py` keeps its aggregation inside a CLI `main()` that prints and exits; the facade calls the five check functions itself and returns a `ValidationResult` with errors and warnings separated. Beyond the schema it adds unique names, relationship reference integrity, column arity and SQL syntax (sqlglot).
 - **DAX is never syntax-checked.** sqlglot cannot parse it, so upstream skips the dialect entirely — a malformed DAX expression passes validation silently. Only portable SQL dialects get real scrutiny.
 
 Division of labour for pack 3: build documents with the pydantic models (typed, correct aliases such as `from_dataset` → `from`, omits empty values), then validate the serialized result with the facade. Put Power BI metadata in `custom_extensions` (`vendor_name` is free-form; `POWER_BI` is a spec example) — anything in self-invented keys is dropped without an error.

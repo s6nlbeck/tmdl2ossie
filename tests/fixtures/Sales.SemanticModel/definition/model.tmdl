@@ -1,0 +1,18 @@
+/// Order-line sales with customer, region and product dimensions.
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	dataAccessOptions
+		legacyRedirects
+
+annotation PBI_QueryOrder = ["Sales","Customer","Region","Product Details"]
+
+ref table Sales
+ref table Customer
+ref table Region
+ref table 'Product Details'
+ref table LocalDateTable_0001
+
+ref cultureInfo en-US
+

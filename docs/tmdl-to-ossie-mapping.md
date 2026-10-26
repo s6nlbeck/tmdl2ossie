@@ -226,8 +226,9 @@ model-level list.
 | `ai_context` | — | Not emitted initially. |
 | `custom_extensions` | leftovers | **Owning table name** (not otherwise expressible), `formatString`, `displayFolder`, `isHidden`, `lineageTag`. |
 
-⚠️ The Retail sample has **no measures**, so this path has no reference data.
-Export a model with measures before trusting it.
+⚠️ The Retail sample has **no measures**. This path is covered by the hand-written
+fixture `tests/fixtures/Sales.SemanticModel` only; check a real export with
+measures before trusting it fully.
 
 ## Dropped and degraded
 
@@ -278,7 +279,7 @@ execution target. Revisit if a concrete downstream converter demands it.
 
 ## Validation
 
-Every generated document goes through `pbi_semantik.validation.validate_model`
+Every generated document goes through `tmdl2ossie.validation.validate_model`
 before being written. It checks the normative JSON Schema plus unique names,
 relationship reference integrity, column arity and SQL syntax. Note again that
 DAX expressions are exempt from the SQL check, so a measure or calculated column

@@ -12,9 +12,10 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Mapping
 from dataclasses import fields as dataclass_fields
 from dataclasses import is_dataclass
-from typing import Any, Mapping
+from typing import Any
 
 from ossie.models import OssieCustomExtension, OssieDataType
 
@@ -160,8 +161,14 @@ def extras(obj: Any) -> dict[str, Any]:
 
 
 def _empty(value: Any) -> bool:
-    """Whether a value carries no information worth serializing."""
-    return value is None or value is False or (not isinstance(value, bool) and not value)
+    """Whether a value carries no information worth serializing.
+
+    ``False`` is the default of every TMDL flag and so says nothing, but a
+    number never counts as empty -- ``ordinal: 0`` is information.
+    """
+    if value is None or value is False:
+        return True
+    return isinstance(value, (str, list, tuple, dict, set, frozenset)) and not value
 
 
 def _jsonable(value: Any) -> Any:

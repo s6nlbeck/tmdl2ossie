@@ -8,19 +8,18 @@ import zipfile
 from pathlib import Path
 
 import pytest
+import yaml
 from ossie import OssieDocument
 from streamlit.testing.v1 import AppTest
 
-import yaml
-
-from pbi_semantik.exporters import TARGETS, ExportError, _qualify_sources, _snowflake_identifier
-from pbi_semantik.graph import to_dot
-from pbi_semantik.loading import UploadError, load_archive, load_directory
-from pbi_semantik.validation import validate_document
+from tmdl2ossie.exporters import TARGETS, ExportError, _qualify_sources, _snowflake_identifier
+from tmdl2ossie.graph import to_dot
+from tmdl2ossie.loading import UploadError, load_archive, load_directory
+from tmdl2ossie.validation import validate_document
 
 ROOT = Path(__file__).resolve().parents[1]
 SEMANTIC_MODEL = ROOT / "samples" / "Retail" / "pbi_file.SemanticModel"
-APP = ROOT / "src" / "pbi_semantik" / "app.py"
+APP = ROOT / "src" / "tmdl2ossie" / "app.py"
 
 
 def _zip(files: dict[str, bytes | str]) -> bytes:
@@ -34,7 +33,11 @@ def _zip(files: dict[str, bytes | str]) -> bytes:
 def _model_files(prefix: str) -> dict[str, bytes]:
     """The Retail definition folder, re-rooted under *prefix*."""
     definition = SEMANTIC_MODEL / "definition"
-    return {f"{prefix}{file.relative_to(definition).as_posix()}": file.read_bytes() for file in definition.rglob("*") if file.is_file()}
+    return {
+        f"{prefix}{file.relative_to(definition).as_posix()}": file.read_bytes()
+        for file in definition.rglob("*")
+        if file.is_file()
+    }
 
 
 @pytest.fixture(scope="module")
@@ -146,7 +149,7 @@ def test_metrics_attach_to_home_table(retail):
 
 @pytest.mark.parametrize("key", ["ossie_yaml", "ossie_json"])
 def test_ossie_exports_round_trip(retail, key, tmp_path):
-    from pbi_semantik.validation import validate_file
+    from tmdl2ossie.validation import validate_file
 
     artifact = TARGETS[key].export(OssieDocument.model_validate(retail), {})
     path = tmp_path / artifact.file_name
@@ -273,7 +276,8 @@ def test_databricks_drops_tables_without_relationship(retail):
     measure_table = {"name": "Kennzahlen", "source": "main.retail.kennzahlen", "fields": [
         {"name": "Platzhalter", "expression": {"dialects": [{"dialect": "ANSI_SQL", "expression": "x"}]}},
     ]}
-    metric = {"name": "Gesamtumsatz", "expression": {"dialects": [{"dialect": "ANSI_SQL", "expression": "SUM(Umsatz)"}]}}
+    dialects = [{"dialect": "ANSI_SQL", "expression": "SUM(Umsatz)"}]
+    metric = {"name": "Gesamtumsatz", "expression": {"dialects": dialects}}
     document = {**retail, "datasets": [*retail["datasets"], measure_table], "metrics": [metric]}
     artifact = _databricks(document, catalog="main", schema="retail")
     view = yaml.safe_load(artifact.content)
@@ -403,7 +407,7 @@ def test_app_model_form_updates_document():
 
 
 def test_field_row_write_back():
-    from pbi_semantik.app import _apply_field_row, _fields_frame
+    from tmdl2ossie.app import _apply_field_row, _fields_frame
 
     fields = [
         {"name": "Datum", "expression": {"dialects": [{"dialect": "ANSI_SQL", "expression": "Datum"}]},
@@ -415,7 +419,7 @@ def test_field_row_write_back():
     assert [row["is_time"] for row in rows] == [True, False]
 
     # Unchanged rows leave the field exactly as written.
-    for field, row in zip(fields, rows):
+    for field, row in zip(fields, rows, strict=True):
         before = copy.deepcopy(field)
         _apply_field_row(field, row)
         assert field == before

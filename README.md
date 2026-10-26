@@ -1,4 +1,6 @@
-# PBI Semantik
+# tmdl2ossie
+
+[![CI](https://github.com/s6nlbeck/tmdl2ossie/actions/workflows/ci.yml/badge.svg)](https://github.com/s6nlbeck/tmdl2ossie/actions/workflows/ci.yml)
 
 Convert a Power BI semantic model into the vendor-neutral
 [Apache Ossie](https://github.com/apache/ossie) format, review and edit it in a
@@ -69,7 +71,7 @@ You need [uv](https://docs.astral.sh/uv/). It installs the right Python version
 git clone https://github.com/s6nlbeck/tmdl2ossie.git
 cd tmdl2ossie
 uv sync
-uv run pbi-semantik          # opens the UI on http://localhost:8501
+uv run tmdl2ossie            # opens the UI on http://localhost:8501
 ```
 
 Run it from the repository checkout: the app reads the vendored Ossie
@@ -104,7 +106,8 @@ left out.
 - **Notes and warnings.** Each export lists what could not be carried over. Anything that
   will break on the target platform is shown as a warning above the download.
 - **Testing so far.** The pipeline has been tested against the bundled CSV-based sample
-  model and the converters' own test suites, not yet against large production models.
+  model, a hand-written test model with measures and SQL sources, and the converters' own
+  test suites, not yet against large production models.
 
 The mapping rules (which TMDL construct becomes which Ossie element) are
 documented in [`docs/tmdl-to-ossie-mapping.md`](docs/tmdl-to-ossie-mapping.md).
@@ -114,10 +117,10 @@ documented in [`docs/tmdl-to-ossie-mapping.md`](docs/tmdl-to-ossie-mapping.md).
 | Path | Role |
 |---|---|
 | `src/tmdl_parser/` | Lossless TMDL parser (standard library only): grammar, vocabulary, dataclasses |
-| `src/pbi_semantik/mapping.py` | TMDL → Ossie mapping, reporting anything it cannot express |
-| `src/pbi_semantik/validation.py` | Validation against the Ossie JSON schema and the upstream semantic checks |
-| `src/pbi_semantik/exporters.py` | Export targets and the platform-specific fix-ups before each converter runs |
-| `src/pbi_semantik/app.py` | Streamlit UI |
+| `src/tmdl2ossie/mapping.py` | TMDL → Ossie mapping, reporting anything it cannot express |
+| `src/tmdl2ossie/validation.py` | Validation against the Ossie JSON schema and the upstream semantic checks |
+| `src/tmdl2ossie/exporters.py` | Export targets and the platform-specific fix-ups before each converter runs |
+| `src/tmdl2ossie/app.py` | Streamlit UI |
 | `src/ossie_databricks/` | Python port of the Ossie → Databricks Metric View converter |
 | `samples/Retail/` | Sample Power BI project (CSV-based) used by the UI and the tests |
 | `vendor/ossie/`, `vendor/ossie-converters-main/` | Unmodified copies of the Apache Ossie repositories |
@@ -126,9 +129,14 @@ documented in [`docs/tmdl-to-ossie-mapping.md`](docs/tmdl-to-ossie-mapping.md).
 
 ```bash
 uv run pytest                                    # project tests
-uv run pytest vendor/ossie/python_implementation/tests -q
+uv run ruff check                                # lint
+uv run pytest vendor/ossie/python_implementation/tests -q -p no:cacheprovider
 uv run pytest vendor/ossie-converters-main/snowflake/tests -q -p no:cacheprovider
 ```
+
+Parser and mapping tests run against the bundled Retail sample and against
+`tests/fixtures/Sales.SemanticModel`, a hand-written model with measures,
+calculated columns, keys and SQL sources. CI runs all of the above on every push.
 
 `CLAUDE.md` holds the detailed design notes.
 

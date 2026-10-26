@@ -1,0 +1,27 @@
+table Region
+	lineageTag: 6f0c2a51-0001-4000-8000-000000000003
+
+	column RegionKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000401
+		summarizeBy: none
+		sourceColumn: RegionKey
+
+	column RegionName
+		dataType: string
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000402
+		summarizeBy: none
+		sourceColumn: RegionName
+
+	partition Region = m
+		mode: import
+		source =
+				let
+					Source = Csv.Document(File.Contents("C:\Data\region.csv"), [Delimiter=",", Columns=2]),
+					Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true])
+				in
+					Headers
+
+	annotation PBI_ResultType = Table
+

@@ -1,6 +1,6 @@
 """Streamlit UI: upload a Power BI semantic model, edit the Ossie result, look at it, export it.
 
-Start with ``uv run pbi-semantik`` (or ``uv run streamlit run src/pbi_semantik/app.py``).
+Start with ``uv run tmdl2ossie`` (or ``uv run streamlit run src/tmdl2ossie/app.py``).
 
 All tabs work on one piece of state, ``st.session_state.doc``: the Ossie
 document in its JSON form. It is kept as a plain dict rather than as an
@@ -27,11 +27,11 @@ import yaml
 from ossie import OssieDataType, OssieDialect, OssieDocument
 from pydantic import ValidationError
 
-from pbi_semantik.exporters import TARGETS, ExportError
-from pbi_semantik.graph import METRIC_COLOR, ROLE_COLORS, to_dot
-from pbi_semantik.loading import LoadedModel, UploadError, load_archive, load_directory
-from pbi_semantik.mapping_helpers import TEMPORAL_TYPES
-from pbi_semantik.validation import ValidationResult, load_yaml, validate_document
+from tmdl2ossie.exporters import TARGETS, ExportError
+from tmdl2ossie.graph import METRIC_COLOR, ROLE_COLORS, to_dot
+from tmdl2ossie.loading import LoadedModel, UploadError, load_archive, load_directory
+from tmdl2ossie.mapping_helpers import TEMPORAL_TYPES
+from tmdl2ossie.validation import ValidationResult, load_yaml, validate_document
 
 SAMPLE_MODEL = Path(__file__).resolve().parents[2] / "samples" / "Retail" / "pbi_file.SemanticModel"
 DATATYPES = [datatype.value for datatype in OssieDataType]
@@ -133,7 +133,7 @@ def _is_time(field: dict[str, Any]) -> bool:
 
 
 def run() -> None:
-    st.set_page_config(page_title="Power BI → Ossie", page_icon=":material/hub:", layout="wide")
+    st.set_page_config(page_title="tmdl2ossie", page_icon=":material/hub:", layout="wide")
     _init_state()
     if message := ss.pop("flash", None):
         st.toast(message, icon=":material/check:")
@@ -426,7 +426,8 @@ def _edit_metrics() -> None:
                     st.error(f"Eine Metrik {name!r} gibt es schon.")
                     return
                 updated = _working_copy()
-                metric = {"name": name, "expression": {"dialects": [{"dialect": dialect_name, "expression": expression}]}}
+                dialects = [{"dialect": dialect_name, "expression": expression}]
+                metric = {"name": name, "expression": {"dialects": dialects}}
                 _set(metric, "description", _text(description))
                 updated.setdefault("metrics", []).append(metric)
                 _commit(updated, message=f"Metrik {name} angelegt")
@@ -442,7 +443,9 @@ def _edit_yaml() -> None:
         "Vollzugriff auf das Ossie-Dokument – für alles, was die Formulare nicht abdecken "
         "(Umbenennen, Beziehungen, `ai_context`, `custom_extensions`, weitere Dialekte)."
     )
-    text = st.text_area("Ossie-YAML", _dump_yaml(ss.doc), height=600, key=f"yaml_{ss.rev}", label_visibility="collapsed")
+    text = st.text_area(
+        "Ossie-YAML", _dump_yaml(ss.doc), height=600, key=f"yaml_{ss.rev}", label_visibility="collapsed"
+    )
     if not st.button("YAML übernehmen", type="primary"):
         return
     try:
@@ -487,7 +490,10 @@ def _graph_tab() -> None:
     # Natural size: stretching would blow a three-table model up to full width.
     st.graphviz_chart(dot)
 
-    swatch = '<span style="display:inline-block;width:.8em;height:.8em;border-radius:2px;background:{};margin:0 .3em 0 1em"></span>{}'
+    swatch = (
+        '<span style="display:inline-block;width:.8em;height:.8em;border-radius:2px;'
+        'background:{};margin:0 .3em 0 1em"></span>{}'
+    )
     legend = [swatch.format(color, role) for role, color in ROLE_COLORS.items()]
     legend.append(swatch.format(METRIC_COLOR, "ƒ Metrik"))
     st.markdown(
@@ -577,7 +583,8 @@ def _export_tab(validation: ValidationResult) -> None:
                 st.markdown(f"- {note}")
     preview = artifact.preview if artifact.preview is not None else artifact.content
     if isinstance(preview, str):
-        language = {"yaml": "yaml", "json": "json", "sql": "sql", "zip": "yaml"}.get(artifact.file_name.rsplit(".", 1)[-1])
+        extension = artifact.file_name.rsplit(".", 1)[-1]
+        language = {"yaml": "yaml", "json": "json", "sql": "sql", "zip": "yaml"}.get(extension)
         with st.expander("Vorschau", expanded=True):
             st.code(preview, language=language, line_numbers=True, height=500)
 

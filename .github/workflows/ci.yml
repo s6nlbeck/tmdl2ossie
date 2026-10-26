@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Installs uv; uv then installs the Python version from .python-version.
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install
+        run: uv sync --locked
+
+      - name: Lint
+        run: uv run ruff check
+
+      - name: Tests
+        run: uv run pytest -q
+
+      # The vendored upstream suites guard the Ossie spec and the Snowflake
+      # converter we build on. Cube's suite is left out: 3 of its tests need the
+      # upstream `ossie` submodule, which the vendored copy does not include.
+      - name: Vendored Ossie and Snowflake suites
+        run: |
+          uv run pytest vendor/ossie/python_implementation/tests -q -p no:cacheprovider
+          uv run pytest vendor/ossie-converters-main/snowflake/tests -q -p no:cacheprovider

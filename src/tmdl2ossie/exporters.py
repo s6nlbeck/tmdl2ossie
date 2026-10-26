@@ -21,8 +21,8 @@ import re
 import warnings
 import zipfile
 from collections.abc import Callable, Mapping
-from pathlib import PurePosixPath
 from dataclasses import dataclass, field
+from pathlib import PurePosixPath
 from typing import Any
 
 import yaml
@@ -452,7 +452,9 @@ def export_honeydew(document: OssieDocument, options: Mapping[str, str]) -> Expo
     for message in dict.fromkeys(str(warning.message) for warning in caught):
         if "no entity reference found" in message:
             # The metric lands on an arbitrary entity, and its columns will not resolve there.
-            warnings_.append(f"{message} – Spalten im Ausdruck mit dem Tabellennamen qualifizieren, z. B. `verkauefe.Umsatz`.")
+            warnings_.append(
+                f"{message} – Spalten im Ausdruck mit dem Tabellennamen qualifizieren, z. B. `verkauefe.Umsatz`."
+            )
         else:
             rest.append(message)
     return _zip_artifact(f"{file_stem(document)}.honeydew.zip", files, notes + rest, warnings_)
@@ -546,7 +548,8 @@ TARGETS: dict[str, ExportTarget] = {
                 ExportOption(
                     "dialect",
                     "SQL-Dialekt",
-                    "Welcher Ausdruck bevorzugt wird, wenn ein Feld mehrere Dialekte hat; ANSI SQL ist immer der Rückfall.",
+                    "Welcher Ausdruck bevorzugt wird, wenn ein Feld mehrere Dialekte hat; "
+                    "ANSI SQL ist immer der Rückfall.",
                     kind="choice",
                     choices=(("", "ANSI SQL"), ("SNOWFLAKE", "Snowflake"), ("DATABRICKS", "Databricks"),
                              ("BIGQUERY", "BigQuery")),

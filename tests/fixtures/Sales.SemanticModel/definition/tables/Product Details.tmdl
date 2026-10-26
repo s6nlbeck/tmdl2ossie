@@ -1,0 +1,48 @@
+table 'Product Details'
+	lineageTag: 6f0c2a51-0001-4000-8000-000000000004
+
+	column ProductKey
+		dataType: string
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000501
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+	column Category
+		dataType: string
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000502
+		summarizeBy: none
+		sourceColumn: Category
+
+	column Subcategory
+		dataType: string
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000503
+		summarizeBy: none
+		sourceColumn: Subcategory
+
+	column ListPrice
+		dataType: double
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000504
+		summarizeBy: average
+		sourceColumn: ListPrice
+
+	hierarchy 'Product Hierarchy'
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000601
+
+		level Category
+			lineageTag: 6f0c2a51-0001-4000-8000-000000000602
+			column: Category
+
+		level Subcategory
+			lineageTag: 6f0c2a51-0001-4000-8000-000000000603
+			column: Subcategory
+
+	partition 'Product Details' = m
+		mode: import
+		source =
+				let
+					Source = Sql.Database("sql.example.com", "SalesDW", [Query="SELECT ProductKey, Category, Subcategory, ListPrice FROM dbo.DimProduct"])
+				in
+					Source
+
+	annotation PBI_ResultType = Table
+

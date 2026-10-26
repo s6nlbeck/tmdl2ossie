@@ -16,7 +16,7 @@ from collections.abc import Iterable
 from html import escape
 from typing import Any
 
-from pbi_semantik.mapping_helpers import POWER_BI_VENDOR
+from tmdl2ossie.mapping_helpers import POWER_BI_VENDOR
 
 # Reference categorical palette (light mode), slots 1-3, plus neutral inks.
 # The role is also spelled out in each header, so color is never the only cue.

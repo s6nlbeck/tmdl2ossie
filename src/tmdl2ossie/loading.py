@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-from pbi_semantik.mapping import MappingError, convert
+from tmdl2ossie.mapping import MappingError, convert
 from tmdl_parser import TMDLParseError, parse_semantic_model
 from tmdl_parser.parser import MODEL_FILE
 
@@ -58,7 +58,7 @@ def load_archive(data: bytes, *, fallback_name: str) -> list[LoadedModel]:
     except zipfile.BadZipFile as error:
         raise UploadError(f"keine gültige ZIP-Datei: {error}") from None
 
-    with archive, tempfile.TemporaryDirectory(prefix="pbi-semantik-") as tmp:
+    with archive, tempfile.TemporaryDirectory(prefix="tmdl2ossie-") as tmp:
         root = Path(tmp)
         _extract_tmdl(archive, root)
         definitions = find_definitions(root)

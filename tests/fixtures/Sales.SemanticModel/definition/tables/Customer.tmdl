@@ -1,0 +1,38 @@
+table Customer
+	lineageTag: 6f0c2a51-0001-4000-8000-000000000002
+
+	/// Surrogate key of the customer.
+	column CustomerKey
+		dataType: int64
+		isKey
+		formatString: 0
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000301
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+	column Name
+		dataType: string
+		isAvailableInMdx: false
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000302
+		summarizeBy: none
+		sourceColumn: Name
+
+	column RegionKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000303
+		summarizeBy: none
+		sourceColumn: RegionKey
+
+	partition Customer = m
+		mode: import
+		source =
+				let
+					Source = Sql.Database("sql.example.com", "SalesDW"),
+					Query = Value.NativeQuery(Source, "SELECT CustomerKey, ""Full Name"" AS Name, RegionKey FROM dbo.DimCustomer", null, [EnableFolding=true])
+				in
+					Query
+
+	annotation PBI_ResultType = Table
+

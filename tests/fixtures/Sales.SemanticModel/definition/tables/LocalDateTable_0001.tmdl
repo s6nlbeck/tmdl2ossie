@@ -1,0 +1,34 @@
+table LocalDateTable_0001
+	isHidden
+	showAsVariationsOnly
+	lineageTag: 6f0c2a51-0001-4000-8000-000000000005
+
+	column Date
+		dataType: dateTime
+		isHidden
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000701
+		dataCategory: PaddedDateTableDates
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+	column Year = YEAR([Date])
+		dataType: int64
+		isHidden
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000702
+		dataCategory: Years
+		summarizeBy: none
+
+	hierarchy 'Date Hierarchy'
+		lineageTag: 6f0c2a51-0001-4000-8000-000000000703
+
+		level Year
+			lineageTag: 6f0c2a51-0001-4000-8000-000000000704
+			column: Year
+
+	partition LocalDateTable_0001 = calculated
+		mode: import
+		source = Calendar(Date(Year(MIN('Sales'[OrderDate])), 1, 1), Date(Year(MAX('Sales'[OrderDate])), 12, 31))
+
+	annotation __PBI_LocalDateTable = true
+

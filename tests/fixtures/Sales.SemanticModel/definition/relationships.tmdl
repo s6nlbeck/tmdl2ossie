@@ -1,0 +1,25 @@
+relationship 6f0c2a51-0001-4000-8000-000000000901
+	fromColumn: Sales.CustomerKey
+	toColumn: Customer.CustomerKey
+
+relationship AutoDetected_6f0c2a51-0001-4000-8000-000000000902
+	fromColumn: Sales.ProductKey
+	toColumn: 'Product Details'.ProductKey
+
+/// Written one-to-many, so the mapping has to flip it.
+relationship 6f0c2a51-0001-4000-8000-000000000903
+	fromCardinality: one
+	toCardinality: many
+	fromColumn: Region.RegionKey
+	toColumn: Customer.RegionKey
+
+relationship 6f0c2a51-0001-4000-8000-000000000904
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Sales.OrderDate
+	toColumn: LocalDateTable_0001.Date
+
+relationship 6f0c2a51-0001-4000-8000-000000000905
+	isActive: false
+	fromColumn: Sales.BillToCustomerKey
+	toColumn: Customer.CustomerKey
+

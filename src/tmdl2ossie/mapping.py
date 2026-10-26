@@ -14,7 +14,7 @@ for -- hierarchies, formatting, visibility, lineage tags -- moves into
 Conversion never raises on questionable input if it can help it: constructs that
 cannot be expressed are skipped and reported in :attr:`ConversionResult.warnings`,
 so one odd relationship does not cost the whole model. Validate the result with
-``pbi_semantik.validation.validate_model`` before writing it out.
+``tmdl2ossie.validation.validate_model`` before writing it out.
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ from ossie.models import (
     OssieRelationship,
 )
 
-from pbi_semantik.mapping_helpers import (
+from tmdl2ossie.mapping_helpers import (
     TEMPORAL_TYPES,
     deduplicate,
     extras,

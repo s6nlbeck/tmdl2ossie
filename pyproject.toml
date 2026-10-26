@@ -1,5 +1,5 @@
 [project]
-name = "pbi-semantik"
+name = "tmdl2ossie"
 version = "0.1.0"
 description = "Convert Power BI semantic models (TMDL) to Apache Ossie and export them to Snowflake, Databricks, Cube and Honeydew"
 readme = "README.md"
@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.scripts]
-pbi-semantik = "pbi_semantik:main"
+tmdl2ossie = "tmdl2ossie:main"
 
 [build-system]
 requires = ["uv_build>=0.12.19,<0.13.0"]
@@ -31,7 +31,7 @@ build-backend = "uv_build"
 # Without this the backend ships only the module matching the project name,
 # leaving tmdl_parser and ossie_databricks out of the wheel.
 [tool.uv.build-backend]
-module-name = ["pbi_semantik", "tmdl_parser", "ossie_databricks"]
+module-name = ["tmdl2ossie", "tmdl_parser", "ossie_databricks"]
 
 [tool.uv.workspace]
 members = [
@@ -50,9 +50,19 @@ apache-ossie-honeydew = { workspace = true }
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
+    "ruff>=0.17.2",
 ]
 
 # The vendored Ossie tree has its own suites (with clashing module names);
 # run those explicitly, see CLAUDE.md.
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+# Verbatim third-party copies; they keep upstream's style.
+extend-exclude = ["vendor"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
