@@ -1,0 +1,61 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 0,
+            "y": 36
+          },
+          "nodeIndex": "kunden",
+          "nodeLineageTag": "2bc7dc3b-3ea5-4bb5-bcf5-5a35732d6bc0",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 455,
+            "y": 0
+          },
+          "nodeIndex": "produkte",
+          "nodeLineageTag": "67038ef3-5edd-4d87-b2a4-1192cb79fc0a",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 856,
+            "y": 627
+          },
+          "nodeIndex": "verkauefe",
+          "nodeLineageTag": "fd3db0b8-2fef-4eef-bf45-5027c8c6a78a",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 2
+        }
+      ],
+      "name": "Alle Tabellen",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Alle Tabellen",
+  "defaultDiagram": "Alle Tabellen"
+}

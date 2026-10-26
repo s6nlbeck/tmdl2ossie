@@ -1,0 +1,58 @@
+[project]
+name = "pbi-semantik"
+version = "0.1.0"
+description = "Convert Power BI semantic models (TMDL) to Apache Ossie and export them to Snowflake, Databricks, Cube and Honeydew"
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [{ name = "Nils Becker" }]
+# Own code is PolyForm Noncommercial; the Databricks port is a derived work of
+# Apache-2.0 code and stays under that license (see NOTICE).
+license = "PolyForm-Noncommercial-1.0.0 AND Apache-2.0"
+license-files = ["LICENSE", "NOTICE", "LICENSES/*"]
+dependencies = [
+    "apache-ossie",
+    "apache-ossie-cube",
+    "apache-ossie-honeydew",
+    "apache-ossie-snowflake",
+    "jsonschema>=4.26.0",
+    "pyyaml>=6.0.3",
+    "referencing>=0.37.0",
+    "sqlglot>=30.21.0",
+    "streamlit>=1.66.1",
+]
+
+[project.scripts]
+pbi-semantik = "pbi_semantik:main"
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13.0"]
+build-backend = "uv_build"
+
+# Without this the backend ships only the module matching the project name,
+# leaving tmdl_parser and ossie_databricks out of the wheel.
+[tool.uv.build-backend]
+module-name = ["pbi_semantik", "tmdl_parser", "ossie_databricks"]
+
+[tool.uv.workspace]
+members = [
+    "vendor/ossie/python_implementation",
+    "vendor/ossie-converters-main/snowflake",
+    "vendor/ossie-converters-main/cube",
+    "vendor/ossie-converters-main/honeydew",
+]
+
+[tool.uv.sources]
+apache-ossie = { workspace = true }
+apache-ossie-snowflake = { workspace = true }
+apache-ossie-cube = { workspace = true }
+apache-ossie-honeydew = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+# The vendored Ossie tree has its own suites (with clashing module names);
+# run those explicitly, see CLAUDE.md.
+[tool.pytest.ini_options]
+testpaths = ["tests"]

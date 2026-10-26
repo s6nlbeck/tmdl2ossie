@@ -1,0 +1,53 @@
+PBI Semantik
+Copyright 2026 Nils Becker
+
+This software is licensed under the PolyForm Noncommercial License 1.0.0
+(see LICENSE), except for the components listed below. Commercial use requires
+a separate license from the licensor; request one through the issue tracker of
+this repository.
+
+Required Notice: Copyright 2026 Nils Becker
+
+-------------------------------------------------------------------------------
+Components under the Apache License 2.0 (see LICENSES/Apache-2.0.txt)
+-------------------------------------------------------------------------------
+
+The PolyForm license above does not apply to the following files; they remain
+under the Apache License 2.0, including for commercial use.
+
+Unmodified third-party copies:
+
+  vendor/ossie/
+      Apache Ossie (incubating): core specification, examples, validator and
+      Python implementation. https://github.com/apache/ossie
+
+  vendor/ossie-converters-main/
+      Apache Ossie converters. https://github.com/apache/ossie-converters
+      Ships with its own LICENSE and NOTICE in that directory.
+
+Derived works, modified from Apache Ossie converter sources:
+
+  src/ossie_databricks/
+      Python port of the export direction (Ossie -> Databricks Metric View) of
+      vendor/ossie-converters-main/databricks/java. Changes: translated from
+      Java to Python; the import direction and the stash writer are omitted.
+
+  tests/test_ossie_databricks.py
+      Port of the export tests in OssieConverterSuite.java from the same
+      converter. Changes: translated from Java (JUnit) to Python (pytest).
+
+The Apache Ossie components carry the following notice:
+
+  Apache Ossie (incubating)
+  Copyright 2026 The Apache Software Foundation
+
+  This product includes software developed at
+  The Apache Software Foundation (http://www.apache.org/).
+
+-------------------------------------------------------------------------------
+Trademarks
+-------------------------------------------------------------------------------
+
+Power BI is a trademark of Microsoft Corporation. Apache, Apache Ossie and the
+Apache feather logo are trademarks of The Apache Software Foundation. This
+project is not affiliated with or endorsed by either.

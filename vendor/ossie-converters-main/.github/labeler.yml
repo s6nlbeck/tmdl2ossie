@@ -1,0 +1,103 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+# One label per converter
+converter/cube:
+  - changed-files:
+      - any-glob-to-any-file: 'cube/**'
+
+converter/databricks:
+  - changed-files:
+      - any-glob-to-any-file: 'databricks/**'
+
+converter/dbt:
+  - changed-files:
+      - any-glob-to-any-file: 'dbt/**'
+
+converter/gooddata:
+  - changed-files:
+      - any-glob-to-any-file: 'gooddata/**'
+
+converter/hex:
+  - changed-files:
+      - any-glob-to-any-file: 'hex/**'
+
+converter/holistics:
+  - changed-files:
+      - any-glob-to-any-file: 'holistics/**'
+
+converter/honeydew:
+  - changed-files:
+      - any-glob-to-any-file: 'honeydew/**'
+
+converter/microsoft:
+  - changed-files:
+      - any-glob-to-any-file: 'microsoft/**'
+
+converter/nvidia:
+  - changed-files:
+      - any-glob-to-any-file: 'nvidia/**'
+
+converter/omni:
+  - changed-files:
+      - any-glob-to-any-file: 'omni/**'
+
+converter/ontology:
+  - changed-files:
+      - any-glob-to-any-file: 'ontology/**'
+
+converter/orionbelt:
+  - changed-files:
+      - any-glob-to-any-file: 'orionbelt/**'
+
+converter/polaris:
+  - changed-files:
+      - any-glob-to-any-file: 'polaris/**'
+
+converter/salesforce:
+  - changed-files:
+      - any-glob-to-any-file: 'salesforce/**'
+
+converter/sigma:
+  - changed-files:
+      - any-glob-to-any-file: 'sigma/**'
+
+converter/snowflake:
+  - changed-files:
+      - any-glob-to-any-file: 'snowflake/**'
+
+converter/thoughtspot:
+  - changed-files:
+      - any-glob-to-any-file: 'thoughtspot/**'
+
+converter/wisdom:
+  - changed-files:
+      - any-glob-to-any-file: 'wisdom/**'
+
+converter/wisdom-semantic-view:
+  - changed-files:
+      - any-glob-to-any-file: 'wisdom-semantic-view/**'
+
+# Other areas
+infra:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+          - '.asf.yaml'
+          - '.gitmodules'
+          - 'ossie'
+          - 'dev/**'

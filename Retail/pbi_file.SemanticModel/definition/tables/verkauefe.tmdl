@@ -1,0 +1,84 @@
+table verkauefe
+	lineageTag: fd3db0b8-2fef-4eef-bf45-5027c8c6a78a
+
+	column VerkaufsID
+		dataType: int64
+		formatString: 0
+		lineageTag: 7caaf4c2-1df3-4a1c-ba4e-0a258e78243b
+		summarizeBy: count
+		sourceColumn: VerkaufsID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Datum
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 87f8eae7-9003-417b-8e90-7a2ebe058982
+		summarizeBy: none
+		sourceColumn: Datum
+
+		variation Variation
+			isDefault
+			relationship: 24b191a9-dbbe-4e21-a805-447948650b08
+			defaultHierarchy: LocalDateTable_cf21cd03-a1bc-4b3d-bb33-5ae1d2928f7f.Datumshierarchie
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column KundenID
+		dataType: int64
+		formatString: 0
+		lineageTag: 4531228a-5f8b-46f5-b815-83a5d6ec0606
+		summarizeBy: none
+		sourceColumn: KundenID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProduktID
+		dataType: string
+		lineageTag: 793ddf98-e558-4a3d-8937-047493d6cd97
+		summarizeBy: none
+		sourceColumn: ProduktID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Menge
+		dataType: int64
+		formatString: 0
+		lineageTag: 16c6da5b-0615-465b-b8a2-ca3396d73b49
+		summarizeBy: sum
+		sourceColumn: Menge
+
+		annotation SummarizationSetBy = Automatic
+
+	column Umsatz
+		dataType: int64
+		formatString: 0
+		lineageTag: 94446472-f984-485c-bbc8-e71b85917402
+		summarizeBy: sum
+		sourceColumn: Umsatz
+
+		annotation SummarizationSetBy = Automatic
+
+	column Kosten
+		dataType: int64
+		formatString: 0
+		lineageTag: 65c91259-7e48-4c74-8e5f-5224a846bb71
+		summarizeBy: sum
+		sourceColumn: Kosten
+
+		annotation SummarizationSetBy = Automatic
+
+	partition verkauefe = m
+		mode: import
+		source =
+				let
+				  Quelle = Csv.Document(File.Contents("C:\Daten\Retail\verkauefe.csv"), [Delimiter = ";", Columns = 7, QuoteStyle = QuoteStyle.None]),
+				  #"Höher gestufte Header" = Table.PromoteHeaders(Quelle, [PromoteAllScalars = true]),
+				  #"Geänderter Spaltentyp" = Table.TransformColumnTypes(#"Höher gestufte Header", {{"VerkaufsID", Int64.Type}, {"Datum", type date}, {"KundenID", Int64.Type}, {"ProduktID", type text}, {"Menge", Int64.Type}, {"Umsatz", Int64.Type}, {"Kosten", Int64.Type}}, "de")
+				in
+				  #"Geänderter Spaltentyp"
+
+	annotation PBI_ResultType = Table
+

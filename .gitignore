@@ -1,0 +1,27 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# macOS
+.DS_Store
+
+# Power BI: binary files and per-user state. .pbix and cache.abf hold the data
+# model including source paths; localSettings.json a machine-bound signature.
+*.pbix
+**/.pbi/localSettings.json
+**/.pbi/cache.abf

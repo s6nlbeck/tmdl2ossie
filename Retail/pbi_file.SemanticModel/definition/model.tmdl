@@ -1,0 +1,23 @@
+model Model
+	culture: de-DE
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: de-CH
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["kunden","produkte","verkauefe"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table kunden
+ref table produkte
+ref table verkauefe
+ref table DateTableTemplate_d5efc5e9-a8a5-473f-a236-5b9c0043fc02
+ref table LocalDateTable_cf21cd03-a1bc-4b3d-bb33-5ae1d2928f7f
+
+ref cultureInfo de-DE
+

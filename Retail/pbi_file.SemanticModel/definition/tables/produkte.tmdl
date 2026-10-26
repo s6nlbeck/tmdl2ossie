@@ -1,0 +1,48 @@
+table produkte
+	lineageTag: 67038ef3-5edd-4d87-b2a4-1192cb79fc0a
+
+	column ProduktID
+		dataType: string
+		lineageTag: 881062fe-78df-4829-b064-8f3553c42775
+		summarizeBy: none
+		sourceColumn: ProduktID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Produktname
+		dataType: string
+		lineageTag: 7d5b6b1b-11a5-4e21-a776-a058a53acc3c
+		summarizeBy: none
+		sourceColumn: Produktname
+
+		annotation SummarizationSetBy = Automatic
+
+	column Kategorie
+		dataType: string
+		lineageTag: b2a235b8-1850-4203-93c6-a675489a6479
+		summarizeBy: none
+		sourceColumn: Kategorie
+
+		annotation SummarizationSetBy = Automatic
+
+	column Listenpreis
+		dataType: int64
+		formatString: 0
+		lineageTag: fbc75dfc-8337-47f1-8e21-69f15183b550
+		summarizeBy: none
+		sourceColumn: Listenpreis
+
+		annotation SummarizationSetBy = Automatic
+
+	partition produkte = m
+		mode: import
+		source =
+				let
+				  Quelle = Csv.Document(File.Contents("C:\Daten\Retail\produkte.csv"), [Delimiter = ";", Columns = 4, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				  #"Höher gestufte Header" = Table.PromoteHeaders(Quelle, [PromoteAllScalars = true]),
+				  #"Geänderter Spaltentyp" = Table.TransformColumnTypes(#"Höher gestufte Header", {{"ProduktID", type text}, {"Produktname", type text}, {"Kategorie", type text}, {"Listenpreis", Int64.Type}}, "de")
+				in
+				  #"Geänderter Spaltentyp"
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,13 @@
+relationship 24b191a9-dbbe-4e21-a805-447948650b08
+	joinOnDateBehavior: datePartOnly
+	fromColumn: verkauefe.Datum
+	toColumn: LocalDateTable_cf21cd03-a1bc-4b3d-bb33-5ae1d2928f7f.Date
+
+relationship AutoDetected_654dee2a-73b0-4aa8-91ae-502d72b1b8eb
+	fromColumn: verkauefe.KundenID
+	toColumn: kunden.KundenID
+
+relationship AutoDetected_c97784f5-fb93-4072-918f-f8fe72716533
+	fromColumn: verkauefe.ProduktID
+	toColumn: produkte.ProduktID
+

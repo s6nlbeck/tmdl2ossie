@@ -1,0 +1,51 @@
+table kunden
+	lineageTag: 2bc7dc3b-3ea5-4bb5-bcf5-5a35732d6bc0
+
+	/// Eindeutige ID zur Identifikation des Kunden
+	column KundenID
+		dataType: int64
+		formatString: 0
+		lineageTag: 9c6e2158-a309-46f5-a7f7-278d5539172e
+		summarizeBy: none
+		sourceColumn: KundenID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Name des Kunden oder Unternehmens
+	column Kundenname
+		dataType: string
+		lineageTag: d15ad1c7-a953-41d8-a758-83b0164384db
+		summarizeBy: none
+		sourceColumn: Kundenname
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Region in der der Kunde seinen Hauptsitz oder Standort hat.
+	column Region
+		dataType: string
+		lineageTag: fa932735-29d3-4532-ae10-f9c55eaf90ba
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segment
+		dataType: string
+		lineageTag: c76c158e-9ec8-480a-9a1d-2b4c0e43b1a5
+		summarizeBy: none
+		sourceColumn: Segment
+
+		annotation SummarizationSetBy = Automatic
+
+	partition kunden = m
+		mode: import
+		source =
+				let
+				  Quelle = Csv.Document(File.Contents("C:\Daten\Retail\kunden.csv"), [Delimiter = ";", Columns = 4, Encoding = 65001, QuoteStyle = QuoteStyle.None]),
+				  #"Höher gestufte Header" = Table.PromoteHeaders(Quelle, [PromoteAllScalars = true]),
+				  #"Geänderter Spaltentyp" = Table.TransformColumnTypes(#"Höher gestufte Header", {{"KundenID", Int64.Type}, {"Kundenname", type text}, {"Region", type text}, {"Segment", type text}}, "de")
+				in
+				  #"Geänderter Spaltentyp"
+
+	annotation PBI_ResultType = Table
+
