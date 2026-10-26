@@ -87,6 +87,7 @@ documented in [`docs/tmdl-to-ossie-mapping.md`](docs/tmdl-to-ossie-mapping.md).
 | `src/pbi_semantik/exporters.py` | Export targets and the platform-specific fix-ups before each converter runs |
 | `src/pbi_semantik/app.py` | Streamlit UI |
 | `src/ossie_databricks/` | Python port of the Ossie → Databricks Metric View converter |
+| `samples/Retail/` | Sample Power BI project (CSV-based) used by the UI and the tests |
 | `vendor/ossie/`, `vendor/ossie-converters-main/` | Unmodified copies of the Apache Ossie repositories |
 
 ## Development
@@ -107,7 +108,7 @@ This project is **source-available, not open source**. It is licensed under the
 - **Allowed:** personal use, research and experimentation without a commercial purpose, and use
   by educational institutions, public research organizations, charities and government bodies.
 - **Not allowed without a separate license:** any commercial use, including use inside a company.
-  Request a commercial license through this repository's issue tracker.
+  To request a commercial license, email mail(at)nils-becker.org.
 
 The vendored Apache Ossie code and the components derived from it
 (`src/ossie_databricks/`, `tests/test_ossie_databricks.py`) remain under the

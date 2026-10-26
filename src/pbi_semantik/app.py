@@ -33,7 +33,7 @@ from pbi_semantik.loading import LoadedModel, UploadError, load_archive, load_di
 from pbi_semantik.mapping_helpers import TEMPORAL_TYPES
 from pbi_semantik.validation import ValidationResult, load_yaml, validate_document
 
-SAMPLE_MODEL = Path(__file__).resolve().parents[2] / "Retail" / "pbi_file.SemanticModel"
+SAMPLE_MODEL = Path(__file__).resolve().parents[2] / "samples" / "Retail" / "pbi_file.SemanticModel"
 DATATYPES = [datatype.value for datatype in OssieDataType]
 DIALECTS = [dialect.value for dialect in OssieDialect]
 TEMPORAL = {datatype.value for datatype in TEMPORAL_TYPES}

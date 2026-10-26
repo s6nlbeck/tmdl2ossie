@@ -19,7 +19,7 @@ from pbi_semantik.loading import UploadError, load_archive, load_directory
 from pbi_semantik.validation import validate_document
 
 ROOT = Path(__file__).resolve().parents[1]
-SEMANTIC_MODEL = ROOT / "Retail" / "pbi_file.SemanticModel"
+SEMANTIC_MODEL = ROOT / "samples" / "Retail" / "pbi_file.SemanticModel"
 APP = ROOT / "src" / "pbi_semantik" / "app.py"
 
 
@@ -48,7 +48,7 @@ def retail() -> dict:
 
 
 def test_retail_zip_from_repo():
-    [model] = load_archive((ROOT / "Retail.zip").read_bytes(), fallback_name="Retail")
+    [model] = load_archive((ROOT / "samples" / "Retail.zip").read_bytes(), fallback_name="Retail")
     assert model.label == "Retail/pbi_file.SemanticModel"
     assert model.document["name"] == "pbi_file"
     assert {dataset["name"] for dataset in model.document["datasets"]} == {"kunden", "produkte", "verkauefe"}

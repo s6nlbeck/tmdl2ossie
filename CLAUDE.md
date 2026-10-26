@@ -92,7 +92,7 @@ Division of labour for pack 3: build documents with the pydantic models (typed, 
 
 ## TMDL input format
 
-The reference model lives in `Retail/pbi_file.SemanticModel/definition/` (sample exported from `Retail/pbi_file.pbip`; CSV sources sit in `Retail/`). Its M source paths were anonymized to `C:\Daten\Retail\…` before publishing — the original pointed into a personal OneDrive. `.pbix`, `.pbi/cache.abf` and `.pbi/localSettings.json` are gitignored (data model with source paths, machine-bound signature). `Retail.zip` is built from exactly the files git tracks under `Retail/`; rebuild it the same way if the sample changes, since `tests/test_ui.py` and the upload tab use it. Layout:
+The reference model lives in `samples/Retail/pbi_file.SemanticModel/definition/` (sample exported from `samples/Retail/pbi_file.pbip`; CSV sources sit in `samples/Retail/`). Its M source paths were anonymized to `C:\Daten\Retail\…` before publishing — the original pointed into a personal OneDrive. `.pbix`, `.pbi/cache.abf` and `.pbi/localSettings.json` are gitignored (data model with source paths, machine-bound signature). `samples/Retail.zip` is built from exactly the files git tracks under `samples/Retail/` (archive paths start at `Retail/`); rebuild it the same way if the sample changes, since `tests/test_ui.py` and the upload tab use it. Layout:
 
 - `model.tmdl` — root. Carries model-level properties (`culture`, `defaultPowerBIDataSourceVersion`, …) and the table inventory as `ref table <name>` lines plus `ref cultureInfo <name>`. Start parsing here to learn which table files to read.
 - `tables/<name>.tmdl` — one file per table; columns, measures, partitions, hierarchies.
