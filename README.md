@@ -34,8 +34,8 @@ You need [uv](https://docs.astral.sh/uv/). It installs the right Python version
 (3.13) itself.
 
 ```bash
-git clone <this repository>
-cd PBI_Semantik
+git clone https://github.com/s6nlbeck/tmdl2ossie.git
+cd tmdl2ossie
 uv sync
 uv run pbi-semantik          # opens the UI on http://localhost:8501
 ```
